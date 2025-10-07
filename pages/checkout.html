@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — 7hills</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">7H</span>
+        <span class="brand-text">7hills</span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html#services">Services</a>
+        <a class="cart-link" href="#" aria-label="Cart">
+          <span class="cart-icon">🛒</span>
+          <span id="cart-count" class="cart-count">0</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container checkout-grid">
+      <section>
+        <h1>Checkout</h1>
+        <div id="order-summary" class="card"></div>
+      </section>
+
+      <section>
+        <h2>Place Order</h2>
+        <div class="card">
+          <p class="muted" style="margin-top:0;">Tap below to place your order directly via WhatsApp.</p>
+          <div class="checkout-actions">
+            <a class="btn btn-ghost" href="../index.html">Continue shopping</a>
+            <a class="btn btn-primary" href="https://wa.me/qr/AIUSFM3WMFW4L1" target="_blank" rel="noopener">Place order on WhatsApp</a>
+          </div>
+          <p class="muted">Requires WhatsApp installed. Link: https://wa.me/qr/AIUSFM3WMFW4L1</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> 7hills. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.renderCheckout && window.renderCheckout();
+    });
+  </script>
+</body>
+</html>
+
+

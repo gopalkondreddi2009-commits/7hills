@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — 7hills</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">7H</span>
+        <span class="brand-text">7hills</span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html#services">View site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h1>Admin: Manage Services</h1>
+      <p class="muted">Add custom services with images. These will appear on the homepage services grid.</p>
+
+      <div class="card" style="margin-bottom:16px;">
+        <form id="service-form" class="form">
+          <div class="grid-form">
+            <label>
+              <span>Name</span>
+              <input type="text" name="name" required />
+            </label>
+            <label>
+              <span>Price (₹)</span>
+              <input type="number" name="price" min="0" step="1" required />
+            </label>
+            <label>
+              <span>Image URL (optional)</span>
+              <input type="url" name="imageUrl" placeholder="https://..." />
+            </label>
+            <label>
+              <span>Or upload image</span>
+              <input type="file" name="imageFile" accept="image/*" />
+            </label>
+          </div>
+          <label>
+            <span>Description</span>
+            <textarea name="description" rows="4" required placeholder="What this service includes..."></textarea>
+          </label>
+          <div class="checkout-actions">
+            <button class="btn btn-primary" type="submit">Add service</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0;">Custom Services</h2>
+        <div id="custom-list" class="grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> 7hills. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function getCustomServices() {
+      try { return JSON.parse(localStorage.getItem('customServices')) || []; } catch(e) { return []; }
+    }
+    function saveCustomServices(list) {
+      localStorage.setItem('customServices', JSON.stringify(list));
+    }
+    function slugify(text) {
+      return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    }
+    function renderCustomList() {
+      const host = document.getElementById('custom-list');
+      const items = getCustomServices();
+      if (!items.length) {
+        host.innerHTML = '<p class="muted">No custom services yet.</p>';
+        return;
+      }
+      host.innerHTML = items.map(s => `
+        <div class="card">
+          <img src="${s.image}" alt="${s.name}" style="width:100%; height:160px; object-fit:cover; border-radius:10px; border:1px solid #e3e6e6;" />
+          <h3>${s.name}</h3>
+          <p class="muted">${s.description}</p>
+          <div style="display:flex; align-items:center; justify-content: space-between;">
+            <span class="price">₹${s.price}</span>
+            <button class="btn btn-ghost" data-delete="${s.id}">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      host.querySelectorAll('[data-delete]').forEach(b => {
+        b.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-delete');
+          const list = getCustomServices().filter(x => x.id !== id);
+          saveCustomServices(list);
+          renderCustomList();
+        });
+      });
+    }
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      const y = document.getElementById('year'); if (y) y.textContent = String(new Date().getFullYear());
+      renderCustomList();
+      const form = document.getElementById('service-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const name = fd.get('name');
+        const description = fd.get('description');
+        const price = Number(fd.get('price')) || 0;
+        const imageUrl = (fd.get('imageUrl') || '').toString().trim();
+        const file = fd.get('imageFile');
+        let image = imageUrl;
+        if ((!image || image.length === 0) && file && file.size > 0) {
+          image = await readFileAsDataURL(file);
+        }
+        if (!image) {
+          alert('Please provide an image URL or upload a file.');
+          return;
+        }
+        const id = slugify(name) + '-' + Math.random().toString(36).slice(2,7);
+        const list = getCustomServices();
+        list.unshift({ id, name, description, price, image });
+        saveCustomServices(list);
+        form.reset();
+        renderCustomList();
+        alert('Service added. Go to the homepage and refresh to see it.');
+      });
+    });
+  </script>
+</body>
+</html>
+
+
